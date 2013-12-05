@@ -9,6 +9,7 @@
 
 #include "parhelia_entry.h"
 #include "parhelia_config.h"
+#include "parhelia_encrypt.h"
 
 using namespace std;
 

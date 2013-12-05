@@ -1,4 +1,5 @@
 CXX = g++
+#CXX = clang++
 CXX_FLAGS = -g -pg -Wall
 #CXX_FLAGS = -O2 -Wall
 INC_PATH = -I./include

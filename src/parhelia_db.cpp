@@ -25,12 +25,14 @@ ParheliaDB::~ParheliaDB()
 
 vector<ParheliaEntry> ParheliaDB::search(string key) 
 {
-	vector<ParheliaEntry> ret;
+	pair<vector<ParheliaEntry>, string> data;
+	data.second = _db_passphrase;
+
 	string sql = _gen_sql_search_on_key(key);
 	
 	char * err_msg = 0;
 	int rc = sqlite3_exec(_db_handle, sql.c_str(),
-												_search_callback, &ret, &err_msg);
+												_search_callback, &data, &err_msg);
 
 	if (rc != SQLITE_OK) {
 		cerr << "SQL error: " << err_msg << endl;
@@ -41,7 +43,7 @@ vector<ParheliaEntry> ParheliaDB::search(string key)
 	if (err_msg)
 		sqlite3_free(err_msg);
 	
-	return ret;
+	return data.first;
 }
 
 vector<ParheliaEntry> ParheliaDB::gsearch(string key)
@@ -52,14 +54,14 @@ vector<ParheliaEntry> ParheliaDB::gsearch(string key)
 
 int ParheliaDB::_search_callback(void * data, int ncol, char ** fields, char ** colnames)
 {
-	vector<ParheliaEntry> * p_data = static_cast<vector<ParheliaEntry> *>(data);
+	pair<vector<ParheliaEntry>, string> * p_data = static_cast<pair<vector<ParheliaEntry>, string> *>(data);
 	ParheliaEntry entry;
 	entry.key = fields[0];
 	entry.username = fields[1];
-	entry.password = fields[2];
+	entry.password = ParheliaEncrypt::decrypt(p_data->second, fields[2]);
 	entry.category = fields[3];
 	entry.comments = fields[4];
-	p_data->push_back(entry);
+	p_data->first.push_back(entry);
 	
 	return 0;
 }
@@ -85,7 +87,7 @@ int ParheliaDB::add(bool replace,
 	{
 		if (!replace)
 			return DB_ERR_KEY_EXISTS;
-		string sql = _gen_sql_update_on_key(k, u, p, cat, com);
+		string sql = _gen_sql_update_on_key(k, u, ParheliaEncrypt::encrypt(_db_passphrase, p), cat, com);
 		rc = sqlite3_exec(_db_handle, sql.c_str(), NULL, NULL, &err_msg);
 		if (rc != SQLITE_OK) {
 			cerr << "SQL error: " << err_msg << endl;
@@ -95,7 +97,7 @@ int ParheliaDB::add(bool replace,
 	}
 	else
 	{
-		string sql = _gen_sql_insert(k, u, p, cat, com);
+		string sql = _gen_sql_insert(k, u, ParheliaEncrypt::encrypt(_db_passphrase, p), cat, com);
 		rc = sqlite3_exec(_db_handle, sql.c_str(), NULL, NULL, &err_msg);
 		if (rc != SQLITE_OK) {
 			cerr << "SQL error: " << err_msg << endl;

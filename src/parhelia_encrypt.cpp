@@ -1,6 +1,4 @@
 #include "parhelia_encrypt.h"
-#include "crypt.h"
-//#include <cryptopp/md5.h>
 #include <cryptopp/aes.h>
 #include <cryptopp/modes.h>
 #include <cryptopp/cryptlib.h>

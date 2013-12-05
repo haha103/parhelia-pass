@@ -20,11 +20,6 @@ int main(int argc, char ** argv)
 		opts.db_passphrase = input;
 	}
 
-	string encrypted = ParheliaEncrypt::encrypt(opts.db_passphrase, "hello, world");
-	string decrypted = ParheliaEncrypt::decrypt(opts.db_passphrase, encrypted);
-	cout << encrypted << endl;
-	cout << decrypted << endl;
-	
 	ParheliaDB db(opts.db_file_name, opts.db_passphrase);
 
 	while (1) {
