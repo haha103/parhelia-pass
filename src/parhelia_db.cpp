@@ -34,11 +34,8 @@ vector<ParheliaEntry> ParheliaDB::search(string key)
 	int rc = sqlite3_exec(_db_handle, sql.c_str(),
 												_search_callback, &data, &err_msg);
 
-	if (rc != SQLITE_OK) {
+	if (rc != SQLITE_OK)
 		cerr << "SQL error: " << err_msg << endl;
-	} else {
-		cout << "SQL execution succeeded" << endl;
-	}
 	
 	if (err_msg)
 		sqlite3_free(err_msg);
@@ -66,45 +63,46 @@ int ParheliaDB::_search_callback(void * data, int ncol, char ** fields, char ** 
 	return 0;
 }
 
-int ParheliaDB::add(bool replace,
-										const string & k,	const string & u,
-										const string & p,	const string & cat,
-										const string & com)
+bool ParheliaDB::_key_exists(const string & k, bool exact_match) 
 {
-	// update db
-	vector<ParheliaEntry> entries;
-	string sql = _gen_sql_search_on_key(k);
+	pair<vector<ParheliaEntry>, string> data;
+	data.second = _db_passphrase;
+
+	string sql = _gen_sql_search_on_key(k, exact_match);
+	
 	char * err_msg = 0;
 	int rc = sqlite3_exec(_db_handle, sql.c_str(),
-												_search_callback, &entries, &err_msg);
+												_search_callback, &data, &err_msg);
+
 	if (rc != SQLITE_OK) {
 		cerr << "SQL error: " << err_msg << endl;
-	} else {
-		cout << "SQL execution succeeded" << endl;
 	}
+	
+	if (err_msg)
+		sqlite3_free(err_msg);
+	
+	return data.first.size() > 0;
+}
 
-	if (entries.size() > 0)
-	{
-		if (!replace)
-			return DB_ERR_KEY_EXISTS;
+int ParheliaDB::update(const string & k,	const string & u,
+											 const string & p,	const string & cat,
+											 const string & com)
+{
+	int ret = DB_SUCC;
+	char * err_msg = 0;
+	if (_key_exists(k, true))
+	{		
 		string sql = _gen_sql_update_on_key(k, u, ParheliaEncrypt::encrypt(_db_passphrase, p), cat, com);
-		rc = sqlite3_exec(_db_handle, sql.c_str(), NULL, NULL, &err_msg);
-		if (rc != SQLITE_OK) {
-			cerr << "SQL error: " << err_msg << endl;
-		} else {
-			cout << "SQL execution succeeded" << endl;
-		}	
-	}
-	else
-	{
-		string sql = _gen_sql_insert(k, u, ParheliaEncrypt::encrypt(_db_passphrase, p), cat, com);
-		rc = sqlite3_exec(_db_handle, sql.c_str(), NULL, NULL, &err_msg);
+		int rc = sqlite3_exec(_db_handle, sql.c_str(), NULL, NULL, &err_msg);
 		if (rc != SQLITE_OK) {
 			cerr << "SQL error: " << err_msg << endl;
 			cerr << "SQL statement: " << sql << endl;
-		} else {
-			cout << "SQL execution succeeded" << endl;
+			ret = DB_SQL_FAIL;
 		}
+	}
+	else
+	{
+		ret = DB_ERR_KEY_NOT_FOUND;
 	}
 	
 	if (err_msg)
@@ -113,7 +111,37 @@ int ParheliaDB::add(bool replace,
 	// update cache
 	// TODO
 	
-	return DB_SUCC;
+	return ret;
+}
+
+int ParheliaDB::add(const string & k,	const string & u,
+										const string & p,	const string & cat,
+										const string & com)
+{
+	int ret = DB_SUCC;
+	char * err_msg = 0;
+	if (!_key_exists(k, true))
+	{
+		string sql = _gen_sql_insert(k, u, ParheliaEncrypt::encrypt(_db_passphrase, p), cat, com);
+		int rc = sqlite3_exec(_db_handle, sql.c_str(), NULL, NULL, &err_msg);
+		if (rc != SQLITE_OK) {
+			cerr << "SQL error: " << err_msg << endl;
+			cerr << "SQL statement: " << sql << endl;
+			ret = DB_SQL_FAIL;
+		}
+	}
+	else
+	{
+		ret = DB_ERR_KEY_EXISTS;
+	}
+	
+	if (err_msg)
+		sqlite3_free(err_msg);
+	
+	// update cache
+	// TODO
+	
+	return ret;
 }
 
 string ParheliaDB::_gen_sql_update_on_key(const string & k, const string & u,
@@ -122,7 +150,7 @@ string ParheliaDB::_gen_sql_update_on_key(const string & k, const string & u,
 {
 	string sql = "UPDATE ";
 	sql += DB_NAME_INTERNAL;
-	sql += "SET ";
+	sql += " SET ";
 	sql += "username = '" + u + "', ";
 	sql += "password = '" + p + "', ";
 	sql += "category = '" + cat + "', ";
@@ -146,12 +174,12 @@ string ParheliaDB::_gen_sql_insert(const string & k, const string & u,
 	return sql;
 }
 
-string ParheliaDB::_gen_sql_search_on_key(const string & key) const
+string ParheliaDB::_gen_sql_search_on_key(const string & key, bool exact_match) const
 {
 	string sql = "SELECT * FROM ";
 	sql += DB_NAME_INTERNAL;
-	sql += " WHERE KEY LIKE '%";
+	exact_match ? sql += " WHERE KEY = '" : sql += " WHERE KEY LIKE '%";
   sql += key;
-	sql += "%';";
+	exact_match ? sql += "';" : sql += "%';";
 	return sql;
 }

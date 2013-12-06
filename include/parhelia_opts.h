@@ -10,6 +10,8 @@ class ParheliaOpts
 public:
 	ParheliaOpts(int argc, char ** argv);
 	~ParheliaOpts();
+
+	bool read_db_passphrase();
 	
 	string db_file_name;
 	string db_passphrase;

@@ -1,4 +1,5 @@
 #include "parhelia_opts.h"
+#include "parhelia_helpers.h"
 
 ParheliaOpts::ParheliaOpts(int argc, char ** argv)
 {
@@ -13,4 +14,9 @@ ParheliaOpts::ParheliaOpts(int argc, char ** argv)
 ParheliaOpts::~ParheliaOpts() 
 {
 	// nothing to be freed until now
+}
+
+bool ParheliaOpts::read_db_passphrase()
+{
+	return ParheliaHelper::getline_pw_stdin(db_passphrase);
 }

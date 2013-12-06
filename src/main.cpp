@@ -7,6 +7,20 @@
 
 using namespace std;
 
+void get_all_fields_from_is(istream & is, string & k, string & u, string & p, string & cat, string & com)
+{
+	cout << "Key = ";
+	getline(is, k);
+	cout << "User Name = ";
+	getline(is, u);
+	cout << "Password = ";
+	getline(is, p);
+	cout << "Category = ";
+	getline(is, cat);
+	cout << "Comments = ";
+	getline(is, com);
+}
+
 int main(int argc, char ** argv) 
 {
 	ParheliaOpts opts(argc, argv);
@@ -14,10 +28,10 @@ int main(int argc, char ** argv)
 	while (opts.db_passphrase.size() == 0) 
 	{
 		cout << "Please enter your non-empty password or type 'q' to quit: ";
-		getline(cin, input);
-		if (input == "q")
+		opts.read_db_passphrase();
+		cout << endl;
+		if (opts.db_passphrase == "q")
 			return 1;
-		opts.db_passphrase = input;
 	}
 
 	ParheliaDB db(opts.db_file_name, opts.db_passphrase);
@@ -37,6 +51,7 @@ int main(int argc, char ** argv)
 			cout << ">> Enter a key for search: ";
 			string key;
 			getline(cin, key);
+			cout << endl << endl;
 			vector<ParheliaEntry> entries = db.search(key);
 			vector<ParheliaEntry>::const_iterator it = entries.begin();
 			while (it != entries.end()) {
@@ -45,21 +60,17 @@ int main(int argc, char ** argv)
 			}
 		} else if (input == "a") {
 			string k, u, p, cat, com;
-			cout << "Key = ";
-			getline(cin, k);
-			cout << "User Name = ";
-			getline(cin, u);
-			cout << "Password = ";
-			getline(cin, p);
-			cout << "Category = ";
-			getline(cin, cat);
-			cout << "Comments = ";
-			getline(cin, com);
-			if (db.add(false, k, u, p, cat, com) == DB_SUCC) {
-				cout << "OK" << endl;
-			} else {
-				cout << "FAILED" << endl;
+			get_all_fields_from_is(cin, k, u, p, cat, com);
+			int rc = db.add(k, u, p, cat, com);
+			if (rc == DB_ERR_KEY_EXISTS) {
+				cout << ">> Key '" << k << "' already exists. Updated it? (y/n) ";
+				getline(cin, input);
+				if (input == "y")
+					rc = db.update(k, u, p, cat, com);
 			}
+			cout << ">> " << (rc == DB_SUCC ? "OK" : "NOK") << endl;
+		} else if (input == "e") {
+			
 		} else if (input == "q") {
 			break;
 		} else {

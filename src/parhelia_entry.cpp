@@ -11,11 +11,13 @@ ParheliaEntry::ParheliaEntry()
 
 ostream & operator<<(ostream & os, const ParheliaEntry & entry)
 {
-	os << "Key = " << entry.key << endl
+	os << "------------------------" << endl
+		 << "Key = " << entry.key << endl
 		 << "User Name = " << entry.username << endl
 		 << "Password = " << entry.password << endl
 		 << "Category = " << entry.category << endl
-		 << "Comments = " << entry.comments;
+		 << "Comments = " << entry.comments << endl
+		 << "------------------------" << endl;
 	return os;
 }
 

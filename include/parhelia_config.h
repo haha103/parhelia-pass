@@ -9,6 +9,7 @@
 #define DB_SUCC              0
 #define DB_ERR_KEY_EXISTS    10
 #define DB_ERR_KEY_NOT_FOUND 11
+#define DB_SQL_FAIL          20
 
 
 #endif

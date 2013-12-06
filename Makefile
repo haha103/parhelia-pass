@@ -23,7 +23,7 @@ $(BUILD_DIR)/%.o : $(SRC_DIR)/%.cpp
 	$(CXX) $(CXX_FLAGS) $(INC_PATH) -c $< -o $@
 
 clean:
-	rm -rf $(OBJECTS) $(EXEC)
+	rm -f $(OBJECTS) $(EXEC)
 
 pp:
 	echo $(SOURCES)
