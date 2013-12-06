@@ -178,8 +178,12 @@ string ParheliaDB::_gen_sql_search_on_key(const string & key, bool exact_match) 
 {
 	string sql = "SELECT * FROM ";
 	sql += DB_NAME_INTERNAL;
-	exact_match ? sql += " WHERE KEY = '" : sql += " WHERE KEY LIKE '%";
-  sql += key;
-	exact_match ? sql += "';" : sql += "%';";
+	if (key == "") {
+		sql += ";";
+	} else {
+		exact_match ? sql += " WHERE KEY = '" : sql += " WHERE KEY LIKE '%";
+		sql += key;
+		exact_match ? sql += "';" : sql += "%';";
+	}
 	return sql;
 }

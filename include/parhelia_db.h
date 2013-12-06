@@ -15,7 +15,7 @@ using namespace std;
 
 class ParheliaDB 
 {
- public:
+public:
 	ParheliaDB();
 	ParheliaDB(string db_file_name, string db_passphrase);
 	~ParheliaDB();

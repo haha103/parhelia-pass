@@ -1,6 +1,6 @@
 CXX = g++
 #CXX = clang++
-CXX_FLAGS = -g -pg -Wall
+CXX_FLAGS = -g -Wall
 #CXX_FLAGS = -O2 -Wall
 INC_PATH = -I./include
 LIB_PATH = -L./lib

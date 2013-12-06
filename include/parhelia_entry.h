@@ -15,6 +15,8 @@ public:
 	ParheliaEntry();
 	ParheliaEntry(string k, string uname, string upass, string cat, string com);
 
+	void fmt_fields_width(size_t & k, size_t & u, size_t & p, size_t & cat, size_t & com) const;
+
 	string key;
 	string username;
 	string password;
