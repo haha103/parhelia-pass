@@ -11,15 +11,15 @@
 
 #endif
 
-using namespace std;
-
-class ParheliaHelper 
+namespace parhelia
 {
-public:
-	static bool getline_pw_stdin(string & out);
-	
-};
-
+	using namespace std;
+	class helper 
+	{
+	public:
+		static bool getline_pw_stdin(string & out);
+	};
+}
 
 
 #endif

@@ -7,14 +7,15 @@
 #include <string>
 #include <iostream>
 
-using namespace std;
-
-class ParheliaEncrypt 
+namespace parhelia 
 {
-public:
-	static string encrypt(const string & passphrase, const string & unencrypted);
-	static string decrypt(const string & passphrase, const string & encrypted);
-};
-
+	using namespace std;
+	class encryption 
+	{
+	public:
+		static string encrypt(const string & passphrase, const string & unencrypted);
+		static string decrypt(const string & passphrase, const string & encrypted);
+	};
+}
 
 #endif

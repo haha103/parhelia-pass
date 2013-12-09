@@ -6,6 +6,7 @@
 #include "parhelia_encrypt.h"
 
 using namespace std;
+using namespace parhelia;
 
 void get_all_fields_from_is(istream & is, string & k, string & u, string & p, string & cat, string & com)
 {
@@ -32,12 +33,12 @@ void print_sep(size_t k, size_t u, size_t p, size_t cat, size_t com)
 	cout << sep << endl;
 }
 
-void print_table(vector<ParheliaEntry> & entries) 
+void print_table(vector<entry> & entries) 
 {
 	size_t k = 0, u = 0, p = 0, cat = 0, com = 0;
-	ParheliaEntry h("Key", "User", "Password", "Category", "Comments");
+	entry h("Key", "User", "Password", "Category", "Comments");
 	entries.insert(entries.begin(), h);
-	vector<ParheliaEntry>::const_iterator it = entries.begin();
+	vector<entry>::const_iterator it = entries.begin();
 	// first pass to get the field length
 	while (it != entries.end()) 
 	{
@@ -80,7 +81,7 @@ void print_table(vector<ParheliaEntry> & entries)
 
 int main(int argc, char ** argv) 
 {
-	ParheliaOpts opts(argc, argv);
+	opts opts(argc, argv);
 	string input;	
 	while (opts.db_passphrase.size() == 0) 
 	{
@@ -91,7 +92,7 @@ int main(int argc, char ** argv)
 			return 1;
 	}
 
-	ParheliaDB db(opts.db_file_name, opts.db_passphrase);
+	db db(opts.db_file_name, opts.db_passphrase);
 
 	while (1) {
 		cout << endl << "===== Operation Menu =====" << endl
@@ -109,7 +110,7 @@ int main(int argc, char ** argv)
 			cout << ">> Enter a key for search: ";
 			string key;
 			getline(cin, key);
-			vector<ParheliaEntry> entries = db.search(key);
+			vector<entry> entries = db.search(key);
 			print_table(entries);
 		} else if (input == "a") {
 			string k, u, p, cat, com;
@@ -134,7 +135,7 @@ int main(int argc, char ** argv)
 			}
 			cout << ">> " << (rc == DB_SUCC ? "OK" : "NOK") << endl;
 		} else if (input == "l") {
-			vector<ParheliaEntry> entries = db.search("");
+			vector<entry> entries = db.search("");
 			print_table(entries);
 		} else if (input == "q") {
 			break;
