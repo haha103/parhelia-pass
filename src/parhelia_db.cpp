@@ -199,6 +199,33 @@ int ParheliaDB::add(const string & k,	const string & u,
 	return ret;
 }
 
+int ParheliaDB::del(const string & k)
+{
+	int ret = DB_SUCC;
+	char * err_msg = 0;
+	if (_key_exists(k, true))
+	{
+		string sql = _gen_sql_delete(k);
+		int rc = sqlite3_exec(_db_handle, sql.c_str(), NULL, NULL, &err_msg);
+		if (rc != SQLITE_OK) {
+			cerr << "SQL error: " << err_msg << endl;
+			cerr << "SQL statement: " << sql << endl;
+			ret = DB_SQL_FAIL;
+		}
+	}
+	else
+	{
+		ret = DB_ERR_KEY_NOT_FOUND;
+	}
+	
+	if (err_msg)
+		sqlite3_free(err_msg);
+	
+	// update cache
+	// TODO
+	return ret;
+}
+
 string ParheliaDB::_gen_sql_update_on_key(const string & k, const string & u,
 																					const string & p, const string & cat,
 																					const string & com) const
@@ -240,5 +267,15 @@ string ParheliaDB::_gen_sql_search_on_key(const string & key, bool exact_match) 
 		sql += key;
 		exact_match ? sql += "';" : sql += "%';";
 	}
+	return sql;
+}
+
+string ParheliaDB::_gen_sql_delete(const string & k, bool exact_match) const
+{
+	string sql = "DELETE FROM ";
+	sql += DB_NAME_INTERNAL;
+	exact_match ? sql += " WHERE KEY = '" : sql += " WHERE KEY LIKE '%";
+	sql += k;
+	exact_match ? sql += "';" : sql += "%';";
 	return sql;
 }

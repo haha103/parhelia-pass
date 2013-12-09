@@ -32,6 +32,7 @@ public:
 	int update(const string & k,	const string & u,
 						 const string & p,	const string & cat,
 						 const string & com);
+	int del(const string & k);
 	
  private:
 
@@ -45,6 +46,7 @@ public:
 	string _gen_sql_insert(const string & k, const string & u,
 												 const string & p, const string & cat,
 												 const string & com) const;
+	string _gen_sql_delete(const string & k, bool exact_match = true) const;
 	bool _key_exists(const string & k, bool exact_match = false);
 	
 	sqlite3 * _db_handle;

@@ -17,14 +17,14 @@ bool ParheliaHelper::getline_pw_stdin(string & out)
 
 void ParheliaHelper::get_all_fields_from_is(istream & is, string & k, string & u, string & p, string & cat, string & com)
 {
-	cout << "Key = ";
+	cout << "<< Key = ";
 	getline(is, k);
-	cout << "User Name = ";
+	cout << "<< User Name = ";
 	getline(is, u);
-	cout << "Password = ";
+	cout << "<< Password = ";
 	getline(is, p);
-	cout << "Category = ";
+	cout << "<< Category = ";
 	getline(is, cat);
-	cout << "Comments = ";
+	cout << "<< Comments = ";
 	getline(is, com);
 }

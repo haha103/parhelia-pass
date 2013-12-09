@@ -29,14 +29,15 @@ int main(int argc, char ** argv)
 				 << " gs - global search" << endl
 				 << " a - add new entry" << endl
 				 << " e - edit existing entry" << endl
+				 << " d - delete existing entry" << endl
 				 << " l - list all entries" << endl
 				 << " q - quit" << endl
 				 << "==========================" << endl << endl
-				 << ">> Select an operation: ";
+				 << "<< Select an operation: ";
 				getline(cin, input);
 
 		if (input == "s") {
-			cout << ">> Enter a key for search: ";
+			cout << "<< Enter a key for search: ";
 			string key;
 			getline(cin, key);
 			vector<ParheliaEntry> entries = db.search(key);
@@ -66,6 +67,14 @@ int main(int argc, char ** argv)
 		} else if (input == "l") {
 			vector<ParheliaEntry> entries = db.search("");
 			ParheliaDB::print_table(entries);
+		} else if (input == "d") {
+			string key;
+			cout << "<< Enter a key for deletion: ";
+			getline(cin, key);
+			int rc = db.del(key);
+			if (rc == DB_ERR_KEY_NOT_FOUND)
+				cout << ">> Key '" << key << "' not found. Skip deletion." << endl;
+			cout << ">> " << (rc == DB_SUCC ? "OK" : "NOK") << endl;
 		} else if (input == "q") {
 			break;
 		} else {
