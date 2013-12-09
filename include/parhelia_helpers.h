@@ -17,7 +17,7 @@ class ParheliaHelper
 {
 public:
 	static bool getline_pw_stdin(string & out);
-	
+	static void get_all_fields_from_is(istream & is, string & k, string & u, string & p, string & cat, string & com);
 };
 
 

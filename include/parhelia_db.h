@@ -16,6 +16,9 @@ using namespace std;
 class ParheliaDB 
 {
 public:
+
+	static void print_table(vector<ParheliaEntry> & entries);
+	
 	ParheliaDB();
 	ParheliaDB(string db_file_name, string db_passphrase);
 	~ParheliaDB();
@@ -32,6 +35,8 @@ public:
 	
  private:
 
+	static void _print_sep(size_t k, size_t u, size_t p, size_t cat, size_t com);
+	
 	static int _search_callback(void * data, int ncol, char ** fields, char ** colnames);
 	string _gen_sql_search_on_key(const string & key, bool exact_match = false) const;
 	string _gen_sql_update_on_key(const string & k, const string & u,

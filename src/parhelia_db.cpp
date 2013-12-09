@@ -2,6 +2,61 @@
 
 #include "parhelia_db.h"
 
+void ParheliaDB::_print_sep(size_t k, size_t u, size_t p, size_t cat, size_t com)
+{
+	string sep("+");
+	sep.append(k + 2, '-'); sep += "+";
+	sep.append(u + 2, '-'); sep += "+";
+	sep.append(p + 2, '-'); sep += "+";
+	sep.append(cat + 2, '-'); sep += "+";
+	sep.append(com + 2, '-'); sep += "+";
+	cout << sep << endl;
+}
+
+void ParheliaDB::print_table(vector<ParheliaEntry> & entries)
+{
+	size_t k = 0, u = 0, p = 0, cat = 0, com = 0;
+	ParheliaEntry h("Key", "User", "Password", "Category", "Comments");
+	entries.insert(entries.begin(), h);
+	vector<ParheliaEntry>::const_iterator it = entries.begin();
+	// first pass to get the field length
+	while (it != entries.end()) 
+	{
+		size_t k1, u1, p1, cat1, com1;
+		it->fmt_fields_width(k1, u1, p1, cat1, com1);
+		k = (k1 > k ? k1 : k);
+		u = (u1 > u ? u1 : u);
+		p = (p1 > p ? p1 : p);
+		cat = (cat1 > cat ? cat1 : cat);
+		com = (com1 > com ? com1 : com);
+		++it;
+	}
+	// second pass for printing
+	cout << endl;
+	it = entries.begin();
+	while (it != entries.end())
+	{
+		if (it == entries.begin() || it == entries.begin() + 1)
+			_print_sep(k, u, p, cat, com);
+		
+		string k1, u1, p1, cat1, com1;
+		k1 = it->key; k1.resize(k, ' ');
+		u1 = it->username; u1.resize(u, ' ');
+		p1 = it->password; p1.resize(p, ' ');
+		cat1 = it->category; cat1.resize(cat, ' ');
+		com1 = it->comments; com1.resize(com, ' ');
+		cout << "| " << k1
+				 << " | " << u1
+				 << " | " << p1
+				 << " | " << cat1
+				 << " | " << com1
+				 << " |" << endl;
+		++it;
+		if (it == entries.end())
+			_print_sep(k, u, p, cat, com);
+	}	
+}
+
 ParheliaDB::ParheliaDB(string db_file_name, string db_passphrase)
 	: _db_handle(0), _db_passphrase(db_passphrase)
 {
