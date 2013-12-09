@@ -26,6 +26,7 @@ int main(int argc, char ** argv)
 	while (1) {
 		cout << endl << "===== Operation Menu =====" << endl
 				 << " s - search" << endl
+				 << " cs - category search" << endl
 				 << " gs - global search" << endl
 				 << " a - add new entry" << endl
 				 << " e - edit existing entry" << endl
@@ -41,6 +42,12 @@ int main(int argc, char ** argv)
 			string key;
 			getline(cin, key);
 			vector<ParheliaEntry> entries = db.search(key);
+			ParheliaDB::print_table(entries);
+		} else if (input == "cs") {
+			cout << "<< Enter a category keyword for search: ";
+			string cat;
+			getline(cin, cat);
+			vector<ParheliaEntry> entries = db.cat_search(cat);
 			ParheliaDB::print_table(entries);
 		} else if (input == "a") {
 			string k, u, p, cat, com;

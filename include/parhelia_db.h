@@ -23,8 +23,9 @@ public:
 	ParheliaDB(string db_file_name, string db_passphrase);
 	~ParheliaDB();
 
-	vector<ParheliaEntry> search(string key);  // search based on key only
-	vector<ParheliaEntry> gsearch(string key); // global search on all fields
+	vector<ParheliaEntry> search(string key) const;  // search based on key only
+	vector<ParheliaEntry> gsearch(string key) const; // global search on all fields
+	vector<ParheliaEntry> cat_search(const string & cat) const;
 
 	int add(const string & k,	const string & u,
 					const string & p,	const string & cat,
@@ -40,6 +41,7 @@ public:
 	
 	static int _search_callback(void * data, int ncol, char ** fields, char ** colnames);
 	string _gen_sql_search_on_key(const string & key, bool exact_match = false) const;
+	string _gen_sql_search_on_cat(const string & cat, bool exact_match = false) const;
 	string _gen_sql_update_on_key(const string & k, const string & u,
 																const string & p, const string & cat,
 																const string & com) const;
@@ -51,7 +53,7 @@ public:
 	
 	sqlite3 * _db_handle;
 	string _db_passphrase;
-	map<string, ParheliaEntry> _db_cache;
+	mutable map<string, ParheliaEntry> _db_cache;
 };
 
 

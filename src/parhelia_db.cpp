@@ -78,7 +78,7 @@ ParheliaDB::~ParheliaDB()
 }
 
 
-vector<ParheliaEntry> ParheliaDB::search(string key) 
+vector<ParheliaEntry> ParheliaDB::search(string key) const
 {
 	pair<vector<ParheliaEntry>, string> data;
 	data.second = _db_passphrase;
@@ -98,10 +98,30 @@ vector<ParheliaEntry> ParheliaDB::search(string key)
 	return data.first;
 }
 
-vector<ParheliaEntry> ParheliaDB::gsearch(string key)
+vector<ParheliaEntry> ParheliaDB::gsearch(string key) const
 {
 	vector<ParheliaEntry> ret;
 	return ret;
+}
+
+vector<ParheliaEntry> ParheliaDB::cat_search(const string & cat) const
+{
+	pair<vector<ParheliaEntry>, string> data;
+	data.second = _db_passphrase;
+
+	string sql = _gen_sql_search_on_cat(cat);
+	
+	char * err_msg = 0;
+	int rc = sqlite3_exec(_db_handle, sql.c_str(),
+												_search_callback, &data, &err_msg);
+
+	if (rc != SQLITE_OK)
+		cerr << "SQL error: " << err_msg << endl;
+	
+	if (err_msg)
+		sqlite3_free(err_msg);
+	
+	return data.first;
 }
 
 int ParheliaDB::_search_callback(void * data, int ncol, char ** fields, char ** colnames)
@@ -265,6 +285,20 @@ string ParheliaDB::_gen_sql_search_on_key(const string & key, bool exact_match) 
 	} else {
 		exact_match ? sql += " WHERE KEY = '" : sql += " WHERE KEY LIKE '%";
 		sql += key;
+		exact_match ? sql += "';" : sql += "%';";
+	}
+	return sql;
+}
+
+string ParheliaDB::_gen_sql_search_on_cat(const string & cat, bool exact_match) const
+{
+	string sql = "SELECT * FROM ";
+	sql += DB_NAME_INTERNAL;
+	if (cat == "") {
+		sql += ";";
+	} else {
+		exact_match ? sql += " WHERE CATEGORY = '" : sql += " WHERE CATEGORY LIKE '%";
+		sql += cat;
 		exact_match ? sql += "';" : sql += "%';";
 	}
 	return sql;
