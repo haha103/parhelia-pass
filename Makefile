@@ -8,6 +8,7 @@ LIBS = -lsqlite3 -lcryptopp
 
 SRC_DIR = src
 BUILD_DIR = build
+INCLUDE_DIR = include
 BIN_DIR = bin
 
 SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
@@ -19,7 +20,10 @@ EXEC = $(BIN_DIR)/parhelia_pass
 $(EXEC) : $(OBJECTS)
 	$(CXX) $(CXX_FLAGS) $(INC_PATH) $(LIB_PATH) $(LIBS) $(OBJECTS) -o $@
 
-$(BUILD_DIR)/%.o : $(SRC_DIR)/%.cpp
+$(BUILD_DIR)/main.o : $(SRC_DIR)/main.cpp
+	$(CXX) $(CXX_FLAGS) $(INC_PATH) -c $< -o $@
+
+$(BUILD_DIR)/%.o : $(SRC_DIR)/%.cpp $(INCLUDE_DIR)/%.h
 	$(CXX) $(CXX_FLAGS) $(INC_PATH) -c $< -o $@
 
 clean:
