@@ -11,50 +11,49 @@
 #include "parhelia_config.h"
 #include "parhelia_encrypt.h"
 
-using namespace std;
-
-class ParheliaDB 
+namespace parhelia 
 {
-public:
+	using namespace std;
+	class db 
+	{
+	public:
+		static void print_table(vector<entry> & entries);
+		
+		db();
+		db(string db_file_name, string db_passphrase);
+		~db();
 
-	static void print_table(vector<ParheliaEntry> & entries);
+		vector<entry> search(string key);  // search based on key only
+		vector<entry> gsearch(string key); // global search on all fields
+		vector<entry> cat_search(const string & cat) const;
+
+		int add(const string & k,	const string & u,
+						const string & p,	const string & cat,
+						const string & com);
+		int update(const string & k,	const string & u,
+							 const string & p,	const string & cat,
+							 const string & com);
+		int del(const string & k);
 	
-	ParheliaDB();
-	ParheliaDB(string db_file_name, string db_passphrase);
-	~ParheliaDB();
-
-	vector<ParheliaEntry> search(string key) const;  // search based on key only
-	vector<ParheliaEntry> gsearch(string key) const; // global search on all fields
-	vector<ParheliaEntry> cat_search(const string & cat) const;
-
-	int add(const string & k,	const string & u,
-					const string & p,	const string & cat,
-					const string & com);
-	int update(const string & k,	const string & u,
-						 const string & p,	const string & cat,
-						 const string & com);
-	int del(const string & k);
+	private:
+		static void _print_sep(size_t k, size_t u, size_t p, size_t cat, size_t com);
+		static int _search_callback(void * data, int ncol, char ** fields, char ** colnames);
+		string _gen_sql_search_on_key(const string & key, bool exact_match = false) const;
+		string _gen_sql_search_on_cat(const string & cat, bool exact_match = false) const;
+		string _gen_sql_update_on_key(const string & k, const string & u,
+																	const string & p, const string & cat,
+																	const string & com) const;
+		string _gen_sql_insert(const string & k, const string & u,
+													 const string & p, const string & cat,
+													 const string & com) const;
+		string _gen_sql_delete(const string & k, bool exact_match = true) const;
+		bool _key_exists(const string & k, bool exact_match = false);
 	
- private:
-
-	static void _print_sep(size_t k, size_t u, size_t p, size_t cat, size_t com);
+		sqlite3 * _db_handle;
+		string _db_passphrase;
+		map<string, entry> _db_cache;
+	};
 	
-	static int _search_callback(void * data, int ncol, char ** fields, char ** colnames);
-	string _gen_sql_search_on_key(const string & key, bool exact_match = false) const;
-	string _gen_sql_search_on_cat(const string & cat, bool exact_match = false) const;
-	string _gen_sql_update_on_key(const string & k, const string & u,
-																const string & p, const string & cat,
-																const string & com) const;
-	string _gen_sql_insert(const string & k, const string & u,
-												 const string & p, const string & cat,
-												 const string & com) const;
-	string _gen_sql_delete(const string & k, bool exact_match = true) const;
-	bool _key_exists(const string & k, bool exact_match = false);
-	
-	sqlite3 * _db_handle;
-	string _db_passphrase;
-	mutable map<string, ParheliaEntry> _db_cache;
-};
-
+}
 
 #endif

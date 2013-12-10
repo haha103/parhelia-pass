@@ -3,18 +3,20 @@
 
 #include <string>
 
-using namespace std;
-
-class ParheliaOpts
+namespace parhelia 
 {
-public:
-	ParheliaOpts(int argc, char ** argv);
-	~ParheliaOpts();
+	using namespace std;
+	class opts
+	{
+	public:
+		opts(int argc, char ** argv);
+		~opts();
 
-	bool read_db_passphrase();
+		bool read_db_passphrase();
 	
-	string db_file_name;
-	string db_passphrase;
-};
+		string db_file_name;
+		string db_passphrase;
+	};
+}
 
 #endif

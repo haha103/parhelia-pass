@@ -7,10 +7,11 @@
 #include "parhelia_helpers.h"
 
 using namespace std;
+using namespace parhelia;
 
 int main(int argc, char ** argv) 
 {
-	ParheliaOpts opts(argc, argv);
+	opts opts(argc, argv);
 	string input;	
 	while (opts.db_passphrase.size() == 0) 
 	{
@@ -21,7 +22,7 @@ int main(int argc, char ** argv)
 			return 1;
 	}
 
-	ParheliaDB db(opts.db_file_name, opts.db_passphrase);
+	db db(opts.db_file_name, opts.db_passphrase);
 
 	while (1) {
 		cout << endl << "===== Operation Menu =====" << endl
@@ -41,17 +42,17 @@ int main(int argc, char ** argv)
 			cout << "<< Enter a key for search: ";
 			string key;
 			getline(cin, key);
-			vector<ParheliaEntry> entries = db.search(key);
-			ParheliaDB::print_table(entries);
+			vector<entry> entries = db.search(key);
+			db::print_table(entries);
 		} else if (input == "cs") {
 			cout << "<< Enter a category keyword for search: ";
 			string cat;
 			getline(cin, cat);
-			vector<ParheliaEntry> entries = db.cat_search(cat);
-			ParheliaDB::print_table(entries);
+			vector<entry> entries = db.cat_search(cat);
+			db::print_table(entries);
 		} else if (input == "a") {
 			string k, u, p, cat, com;
-			ParheliaHelper::get_all_fields_from_is(cin, k, u, p, cat, com);
+			helper::get_all_fields_from_is(cin, k, u, p, cat, com);
 			int rc = db.add(k, u, p, cat, com);
 			if (rc == DB_ERR_KEY_EXISTS) {
 				cout << ">> Key '" << k << "' already exists. Updated it? (y/n) ";
@@ -62,7 +63,7 @@ int main(int argc, char ** argv)
 			cout << ">> " << (rc == DB_SUCC ? "OK" : "NOK") << endl;
 		} else if (input == "e") {
 			string k, u, p, cat, com;
-			ParheliaHelper::get_all_fields_from_is(cin, k, u, p, cat, com);
+			helper::get_all_fields_from_is(cin, k, u, p, cat, com);
 			int rc = db.update(k, u, p, cat, com);
 			if (rc == DB_ERR_KEY_NOT_FOUND) {
 				cout << ">> Key '" << k << "' not found. Add it? (y/n) ";
@@ -72,8 +73,8 @@ int main(int argc, char ** argv)
 			}
 			cout << ">> " << (rc == DB_SUCC ? "OK" : "NOK") << endl;
 		} else if (input == "l") {
-			vector<ParheliaEntry> entries = db.search("");
-			ParheliaDB::print_table(entries);
+			vector<entry> entries = db.search("");
+			db::print_table(entries);
 		} else if (input == "d") {
 			string key;
 			cout << "<< Enter a key for deletion: ";
