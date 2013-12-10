@@ -3,7 +3,7 @@ CXX = g++
 CXX_FLAGS = -g -Wall
 #CXX_FLAGS = -O2 -Wall
 INC_PATH = -I./include
-LIB_PATH = -L./lib
+LIB_PATH = 
 LIBS = -lsqlite3 -lcryptopp
 
 SRC_DIR = src
