@@ -60,7 +60,7 @@ int main(int argc, char ** argv)
 				if (input == "y")
 					rc = db.update(k, u, p, cat, com);
 			}
-			cout << ">> " << (rc == DB_SUCC ? "OK" : "NOK") << endl;
+			cout << ">> " << (rc == DB_SUCC ? "OK" : ( rc == DB_NO_CHANGE ? "NO CHANGE" : "NOK")) << endl;
 		} else if (input == "e") {
 			string k, u, p, cat, com;
 			helper::get_all_fields_from_is(cin, k, u, p, cat, com);
@@ -71,7 +71,7 @@ int main(int argc, char ** argv)
 				if (input == "y")
 					rc = db.add(k, u, p, cat, com);
 			}
-			cout << ">> " << (rc == DB_SUCC ? "OK" : "NOK") << endl;
+			cout << ">> " << (rc == DB_SUCC ? "OK" : ( rc == DB_NO_CHANGE ? "NO CHANGE" : "NOK")) << endl;
 		} else if (input == "l") {
 			vector<entry> entries = db.search("");
 			db::print_table(entries);
@@ -82,7 +82,7 @@ int main(int argc, char ** argv)
 			int rc = db.del(key);
 			if (rc == DB_ERR_KEY_NOT_FOUND)
 				cout << ">> Key '" << key << "' not found. Skip deletion." << endl;
-			cout << ">> " << (rc == DB_SUCC ? "OK" : "NOK") << endl;
+			cout << ">> " << (rc == DB_SUCC ? "OK" : ( rc == DB_NO_CHANGE ? "NO CHANGE" : "NOK")) << endl;
 		} else if (input == "q") {
 			break;
 		} else {

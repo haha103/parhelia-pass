@@ -167,12 +167,19 @@ namespace parhelia
 		char * err_msg = 0;
 		if (_key_exists(k, true))
 		{		
-			string sql = _gen_sql_update_on_key(k, u, encryption::encrypt(_db_passphrase, p), cat, com);
-			int rc = sqlite3_exec(_db_handle, sql.c_str(), NULL, NULL, &err_msg);
-			if (rc != SQLITE_OK) {
-				cerr << "SQL error: " << err_msg << endl;
-				cerr << "SQL statement: " << sql << endl;
-				ret = DB_SQL_FAIL;
+			string sql = _gen_sql_update_on_key(k, u, p, cat, com);
+			if (!sql.empty()) 
+			{	
+				int rc = sqlite3_exec(_db_handle, sql.c_str(), NULL, NULL, &err_msg);
+				if (rc != SQLITE_OK) {
+					cerr << "SQL error: " << err_msg << endl;
+					cerr << "SQL statement: " << sql << endl;
+					ret = DB_SQL_FAIL;
+				}
+			}
+			else
+			{
+				ret = DB_NO_CHANGE;
 			}
 		}
 		else
@@ -251,13 +258,19 @@ namespace parhelia
 																		const string & p, const string & cat,
 																		const string & com) const
 	{
+		if (k.empty() || (u.empty() && p.empty() && cat.empty() && com.empty()))
+			return "";
 		string sql = "UPDATE ";
 		sql += DB_NAME_INTERNAL;
 		sql += " SET ";
-		sql += "username = '" + u + "', ";
-		sql += "password = '" + p + "', ";
-		sql += "category = '" + cat + "', ";
-		sql += "comments = '" + com + "' ";
+		if (!u.empty())
+			sql += "username = '" + u + "', ";
+		if (!p.empty())
+			sql += "password = '" + encryption::encrypt(_db_passphrase, p) + "', ";
+		if (!cat.empty())
+			sql += "category = '" + cat + "', ";
+		if (!com.empty())
+			sql += "comments = '" + com + "' ";
 		sql += " WHERE key = '" + k + "';";
 		return sql;
 	}
